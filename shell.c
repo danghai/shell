@@ -4,20 +4,31 @@
     Shell.c
 */
 
-#include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <errno.h>
 #include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <ctype.h>
 #include <sys/wait.h>
+#include <sys/types.h>
 
 #define COMMAND_BUFSIZE 1024
-char *lsh_read_command(void)
+char *lsh_read_command(void);
 
 int main(int argc, char *argv[])
 {
+  char * cmd;
   do {
     printf("MY SHELL > ");
-  }
+    fflush (stdout);
+    cmd = lsh_read_command();
+    printf("%s \n",cmd);  // for testing
+  } while(1);
+
+  exit(EXIT_SUCCESS);
 }
 
 /*
@@ -44,6 +55,7 @@ char *lsh_read_command()
         perror("Error read command line \n");
         exit (EXIT_FAILURE);
       }
-
+      cmd[position] = '\0';
+      return cmd;
   }
 }
