@@ -14,7 +14,6 @@
 #include <ctype.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-#include "builtin_cmd.h"
 
 #define COMMAND_BUFSIZE 1024
 #define STRTOK_BUFSIZE 64
@@ -23,6 +22,29 @@
 char *lsh_read_command(void);
 char **lsh_parse_command(char *);
 int lsh_execute(char **);
+/*
+    Function declarations for builtin shell commands:
+*/
+int lsh_cd(char **args);
+int lsh_help(char **args);
+int lsh_exit(char **args);
+
+// return total command in Shell
+int builtin_sum();
+char *builtin_str[] = {
+  "help",
+  "exit"
+};
+
+/*
+  List of builtin command
+*/
+
+int (*builtin_func[]) (char **) =
+{
+  &lsh_help,
+  &lsh_exit
+};
 
 int main(int argc, char *argv[])
 {
@@ -104,12 +126,11 @@ int lsh_execute(char **args)
   if(args[0] == NULL)
     return 1;
 
-  /* Compare args with builtin_str to determine what command is */
+//  Compare args with builtin_str to determine what command is
   for(int i =0;i < builtin_sum(); i++ )
   {
     if(strcmp(args[0],builtin_str[i]) == 0)
-     printf("a");
-      //return (*builtin_func[i])(args);
+      return (*builtin_func[i])(args);
   }
 
   // Launch command
@@ -139,4 +160,38 @@ int lsh_execute(char **args)
   }
 
   return 1;
+}
+
+
+/*
+    List of builtin commands in Shells
+*/
+
+int builtin_sum()
+{
+  return sizeof(builtin_str) / sizeof(char *);
+}
+
+/*
+  lsh_help: command provides information for user
+*/
+int lsh_help(char **args)
+{
+  int i;
+  printf("*-----------------------------------------------------*\n");
+  printf("*         Welcome to Hai Dang Hoang's Shell           *\n");
+  printf("*   Type command line and arguments, and hit enter .  *\n");
+  printf("*-----------------------------------------------------*\n");
+  printf("The following command line built in Shell: \n");
+  for(i =0;i < builtin_sum(); i++)
+      printf("[%d]%s\n",i+1,builtin_str[i]);
+  return 1;
+}
+/*
+  lsh_exit: command exit the Shell
+*/
+
+int lsh_exit(char **args)
+{
+    return 0;
 }
