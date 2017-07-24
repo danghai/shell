@@ -14,6 +14,7 @@
 #include <ctype.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include "builtin_cmd.h"
 
 #define COMMAND_BUFSIZE 1024
 #define STRTOK_BUFSIZE 64
@@ -21,17 +22,19 @@
 
 char *lsh_read_command(void);
 char **lsh_parse_command(char *);
+int lsh_execute(char **);
 
 int main(int argc, char *argv[])
 {
   char * cmd, **tokens;
+  int status;
   do {
     printf("MY SHELL > ");
     fflush (stdout);
     cmd = lsh_read_command();
     tokens = lsh_parse_command(cmd);
-    printf("%s \n",tokens[1]);  // for testing
-  } while(1);
+    status = lsh_execute(tokens);
+  } while(status !=0);
 
   exit(EXIT_SUCCESS);
 }
@@ -88,4 +91,52 @@ char **lsh_parse_command(char *cmd)
   }
   tokens[position] = NULL;
   return tokens;
+}
+
+/*
+  lsh_execute: Function execute the command line from user
+*/
+
+int lsh_execute(char **args)
+{
+//  char **command;
+  // An empty command was entered
+  if(args[0] == NULL)
+    return 1;
+
+  /* Compare args with builtin_str to determine what command is */
+  for(int i =0;i < builtin_sum(); i++ )
+  {
+    if(strcmp(args[0],builtin_str[i]) == 0)
+     printf("a");
+      //return (*builtin_func[i])(args);
+  }
+
+  // Launch command
+  pid_t pid, childPid;
+
+  pid = fork();
+  switch (pid)
+  {
+      case -1:
+        perror("lsh: Error fork \n");
+        exit(EXIT_FAILURE);
+
+      case 0: // Child process
+        if(execvp(args[0], args)== -1)
+        {
+          perror("lsh: Error execvp \n");
+          exit(EXIT_FAILURE);
+        }
+        _exit(EXIT_SUCCESS);
+      default:
+        childPid = wait(NULL);
+        if(childPid == -1)
+        {
+          perror("lsh: Error wait \n");
+          exit(EXIT_FAILURE);
+        }
+  }
+
+  return 1;
 }
