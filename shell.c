@@ -19,6 +19,12 @@
 #define STRTOK_BUFSIZE 64
 #define STRTOK_DELIM " \t\r\n\a"
 
+/*
+  3 main function in shell:
+  1) read a command
+  2) parse the command
+  3) execute the command
+*/
 char *lsh_read_command(void);
 char **lsh_parse_command(char *);
 int lsh_execute(char **);
@@ -28,24 +34,34 @@ int lsh_execute(char **);
 int lsh_cd(char **args);
 int lsh_help(char **args);
 int lsh_exit(char **args);
+int lsh_pwd (char **args);
 
-// return total command in Shell
+
+/*
+  List total commands in Shell
+*/
 int builtin_sum();
 char *builtin_str[] = {
   "help",
-  "exit"
+  "exit",
+  "pwd"
 };
 
 /*
-  List of builtin command
+  Function pointer used for pointing to function of implemented command
 */
 
 int (*builtin_func[]) (char **) =
 {
   &lsh_help,
-  &lsh_exit
+  &lsh_exit,
+  &lsh_pwd,
+  &lsh_cd
 };
 
+/*
+  MAIN FILE --------------------------------------------------------------------
+*/
 int main(int argc, char *argv[])
 {
   char * cmd, **tokens;
@@ -164,7 +180,7 @@ int lsh_execute(char **args)
 
 
 /*
-    List of builtin commands in Shells
+    builtin_sum: Total commands in Shells
 */
 
 int builtin_sum()
@@ -194,4 +210,39 @@ int lsh_help(char **args)
 int lsh_exit(char **args)
 {
     return 0;
+}
+
+/*
+  lsh_pwd: command get current directory.
+  Using char *getenv(char *args): searches for the environment string
+  pointed to by args and returns the associated value to the string
+  Return -1: for error and return 1 for success command
+*/
+
+int lsh_pwd(char **args)
+{
+  char * env;
+  if((env = getenv("PWD")) == NULL)
+  {
+    fprintf(stderr,"%s: Fail pwd \n",args[0]);
+    return -1;
+  }
+  else
+    printf("%s \n",env);
+  return 1;
+}
+/*
+  lsh_cd: command changes directory
+*/
+
+int lsh_cd(char **args)
+{
+  if (args[1] == NULL) {
+    fprintf(stderr, "lsh: expected argument to \"cd\"\n");
+  } else {
+    if (chdir(args[1]) != 0) {
+      perror("lsh");
+    }
+  }
+  return 1;
 }
