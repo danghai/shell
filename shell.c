@@ -236,7 +236,7 @@ int lsh_pwd(char **args)
   lsh_cd: command changes directory
   Command use:
   cd          ---> Go back to home directory
-  cd <folder> ---> go to folder, return 1 success, return -1 for failure
+  cd <folder> ---> Go to folder, return 1 success, return -1 for failure
 */
 
 int lsh_cd(char **args)
@@ -244,26 +244,40 @@ int lsh_cd(char **args)
   // No second argument: cd --> It must go back home directory
   if (args[1] == NULL)
   {
-    char * env;
-    if((env = getenv("HOME")) == NULL)  // Get HOME directory
-    {
-        perror("Fail getenv - HOME \n");
-        return -1;
-    }
-    // Change to HOME directory by chdir function
-    if((chdir(env))== -1)
-    {
-        perror ("Fail chdir - HOME \n");
-        return -1;
-    }
-    // Update the path PWD (HOME)
-    if((setenv("PWD",env,1))== -1)
-    {
-        perror ("Fail setenv - HOME \n");
-        return -1;
-    }
+      char * env;
+      if((env = getenv("HOME")) == NULL)  // Get HOME directory
+      {
+          perror("Fail getenv - HOME \n");
+          return -1;
+      }
+      // Change to HOME directory by chdir function
+      if((chdir(env))== -1)
+      {
+          perror ("Fail chdir - HOME \n");
+          return -1;
+      }
+      // Update the path PWD (HOME)
+      if((setenv("PWD",env,1))== -1)
+      {
+          perror ("Fail setenv - HOME \n");
+          return -1;
+      }
 
     return 1;
+  }
+
+  else  // cd <folder>
+  {
+     if(args[2]!= NULL)
+     {
+        perror ("Too many arguments \n");
+        return -1;
+     }
+     if((chdir(args[1])) == -1)
+     {
+         fprintf (stderr,"%s No such file or directory\n",args[1]);
+         return -1;
+     }
   }
 
   return 1;
