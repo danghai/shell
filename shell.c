@@ -61,8 +61,8 @@ int (*builtin_func[]) (char **) =
 };
 
 /*
-  MAIN FILE --------------------------------------------------------------------
-*/
+ *MAIN FILE --------------------------------------------------------------------
+ */
 int main(int argc, char *argv[])
 {
   char * cmd, **tokens;
@@ -77,12 +77,12 @@ int main(int argc, char *argv[])
 
   exit(EXIT_SUCCESS);
 }
-
+// ---------------------------------------------------------------------------- End Main
 /*
-    lsh_read_command: Read command line from STDIN until hitting
-    `Enter` or EOF
-    Return: string command line
-*/
+ *   lsh_read_command: Read command line from STDIN until hitting
+ *   `Enter` or EOF
+ *  Return: string command line
+ */
 char *lsh_read_command()
 {
   int position;
@@ -108,8 +108,8 @@ char *lsh_read_command()
 }
 
 /*
-  lsh_parse_command: Function parse the command into a list of arguments
-*/
+ * lsh_parse_command: Function parse the command into a list of arguments
+ */
 
 char **lsh_parse_command(char *cmd)
 {
@@ -133,8 +133,8 @@ char **lsh_parse_command(char *cmd)
 }
 
 /*
-  lsh_execute: Function execute the command line from user
-*/
+ * lsh_execute: Function execute the command line from user
+ */
 
 int lsh_execute(char **args)
 {
