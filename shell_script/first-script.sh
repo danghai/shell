@@ -1,3 +1,4 @@
 #!/bin/sh
 # first comment
-echo Hello World 
+echo Hello World
+ls -l
